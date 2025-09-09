@@ -6,5 +6,9 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  compatibilityDate: '2025-07-16'
+  compatibilityDate: '2025-07-16',
+  runtimeConfig: {
+    // databaseUrl: process.env.DATABASE_URL,
+    databaseUrl: process.env.NUXT_DATABASE_URL
+  },
 })

@@ -14,6 +14,7 @@
   "dependencies": {
     "@iconify-json/lucide": "^1.2.66",
     "@iconify-json/simple-icons": "^1.2.50",
+    "@neondatabase/serverless": "^1.0.1",
     "@nuxt/scripts": "^0.11.13",
     "@nuxt/ui": "^3.3.3",
     "@unhead/vue": "^2.0.14",
