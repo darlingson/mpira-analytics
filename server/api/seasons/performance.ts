@@ -11,6 +11,8 @@ export default defineCachedEventHandler(async () => {
   const results: Record<string, Record<string, any>> = {};
 
   for (const season of seasons) {
+    results[season] = {};
+
     for (const team of teams) {
       const teamMatches = matches.filter(
         m => m.season === season && (m.home_team === team || m.away_team === team)
@@ -57,9 +59,7 @@ export default defineCachedEventHandler(async () => {
 
       const matchesPlayed = teamMatches.length;
 
-      if (!results[team]) results[team] = {};
-
-      results[team][season] = {
+      results[season][team] = {
         matches_played: matchesPlayed,
         wins,
         draws,
