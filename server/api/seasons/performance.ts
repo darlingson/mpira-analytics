@@ -8,10 +8,10 @@ export default defineCachedEventHandler(async () => {
   const seasons = [...new Set(matches.map(m => m.season))];
   const teams = [...new Set(matches.flatMap(m => [m.home_team, m.away_team]))];
 
-  const results: Record<string, Record<string, any>> = {};
+  const results = [];
 
   for (const season of seasons) {
-    results[season] = {};
+    const teamStatsArray = [];
 
     for (const team of teams) {
       const teamMatches = matches.filter(
@@ -59,29 +59,39 @@ export default defineCachedEventHandler(async () => {
 
       const matchesPlayed = teamMatches.length;
 
-      results[season][team] = {
-        matches_played: matchesPlayed,
-        wins,
-        draws,
-        losses,
-        goals_scored: goalsScored,
-        goals_conceded: goalsConceded,
-        goal_difference: goalsScored - goalsConceded,
-        home_goals: homeGoals,
-        away_goals: awayGoals,
-        avg_goals_per_game: +(goalsScored / matchesPlayed).toFixed(2),
-        avg_goals_conceded_per_game: +(goalsConceded / matchesPlayed).toFixed(2),
-        clean_sheets: cleanSheets,
-        failed_to_score: failedToScore,
-        home_matches: homeMatches,
-        away_matches: awayMatches,
-        home_record: `${homeW}W-${homeD}D-${homeL}L`,
-        away_record: `${awayW}W-${awayD}D-${awayL}L`
-      };
+      teamStatsArray.push({
+        team,
+        teamStats: {
+          matches_played: matchesPlayed,
+          wins,
+          draws,
+          losses,
+          goals_scored: goalsScored,
+          goals_conceded: goalsConceded,
+          goal_difference: goalsScored - goalsConceded,
+          home_goals: homeGoals,
+          away_goals: awayGoals,
+          avg_goals_per_game: +(goalsScored / matchesPlayed).toFixed(2),
+          avg_goals_conceded_per_game: +(goalsConceded / matchesPlayed).toFixed(2),
+          clean_sheets: cleanSheets,
+          failed_to_score: failedToScore,
+          home_matches: homeMatches,
+          away_matches: awayMatches,
+          home_record: `${homeW}W-${homeD}D-${homeL}L`,
+          away_record: `${awayW}W-${awayD}D-${awayL}L`
+        }
+      });
     }
-  }
 
-  return results;
+    results.push({
+      season,
+      stats: teamStatsArray
+    });
+  }
+  return {
+    message: "season stats retrieved successfully",
+    data: results
+  };
 }, {
   maxAge: 60 * 60 * 24,
 });

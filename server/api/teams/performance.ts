@@ -8,7 +8,7 @@ export default defineCachedEventHandler(async () => {
   const seasons = [...new Set(matches.map(m => m.season))];
   const teams = [...new Set(matches.flatMap(m => [m.home_team, m.away_team]))];
 
-  const results: Record<string, Record<string, any>> = {};
+  const results = [];
 
   for (const season of seasons) {
     for (const team of teams) {
@@ -57,27 +57,29 @@ export default defineCachedEventHandler(async () => {
 
       const matchesPlayed = teamMatches.length;
 
-      if (!results[team]) results[team] = {};
-
-      results[team][season] = {
-        matches_played: matchesPlayed,
-        wins,
-        draws,
-        losses,
-        goals_scored: goalsScored,
-        goals_conceded: goalsConceded,
-        goal_difference: goalsScored - goalsConceded,
-        home_goals: homeGoals,
-        away_goals: awayGoals,
-        avg_goals_per_game: +(goalsScored / matchesPlayed).toFixed(2),
-        avg_goals_conceded_per_game: +(goalsConceded / matchesPlayed).toFixed(2),
-        clean_sheets: cleanSheets,
-        failed_to_score: failedToScore,
-        home_matches: homeMatches,
-        away_matches: awayMatches,
-        home_record: `${homeW}W-${homeD}D-${homeL}L`,
-        away_record: `${awayW}W-${awayD}D-${awayL}L`
-      };
+      results.push({
+        team,
+        season,
+        stats: {
+          matches_played: matchesPlayed,
+          wins,
+          draws,
+          losses,
+          goals_scored: goalsScored,
+          goals_conceded: goalsConceded,
+          goal_difference: goalsScored - goalsConceded,
+          home_goals: homeGoals,
+          away_goals: awayGoals,
+          avg_goals_per_game: +(goalsScored / matchesPlayed).toFixed(2),
+          avg_goals_conceded_per_game: +(goalsConceded / matchesPlayed).toFixed(2),
+          clean_sheets: cleanSheets,
+          failed_to_score: failedToScore,
+          home_matches: homeMatches,
+          away_matches: awayMatches,
+          home_record: `${homeW}W-${homeD}D-${homeL}L`,
+          away_record: `${awayW}W-${awayD}D-${awayL}L`
+        }
+      });
     }
   }
 
