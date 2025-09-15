@@ -18,10 +18,6 @@
 
     <!-- Right Side Controls -->
     <div class="flex items-center gap-2">
-      <!-- Dark Mode Toggle -->
-      <UToggle v-model="isDark" on-icon="i-heroicons-moon" off-icon="i-heroicons-sun" size="lg" />
-
-      <!-- Mobile Toggle -->
       <UButton
         class="md:hidden"
         variant="ghost"

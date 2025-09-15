@@ -4,5 +4,6 @@
         <main class="flex-1 container mx-auto p-4">
             <slot />
         </main>
+        <Footer/>
     </div>
 </template>

@@ -17,8 +17,13 @@
     "@neondatabase/serverless": "^1.0.1",
     "@nuxt/scripts": "^0.11.13",
     "@nuxt/ui": "^3.3.3",
+    "@tresjs/nuxt": "^4.0.0",
     "@unhead/vue": "^2.0.14",
-    "nuxt": "^4.1.1"
+    "chart.js": "^4.5.0",
+    "nuxt": "^4.1.1",
+    "three": "^0.180.0",
+    "troisjs": "^0.3.4",
+    "vue-chartjs": "^5.3.2"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.9.0",

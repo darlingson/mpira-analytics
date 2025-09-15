@@ -2,8 +2,10 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts'],
-
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts','@tresjs/nuxt'],
+  tres: {
+    devtools: true,
+  },
   css: ['~/assets/css/main.css'],
 
   compatibilityDate: '2025-07-16',
