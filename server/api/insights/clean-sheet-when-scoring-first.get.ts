@@ -21,7 +21,7 @@ export default defineCachedEventHandler(
       return 9999;
     };
 
-    // Group events by match_id
+    // Group goal events by match
     const eventsByMatch = new Map<number, any[]>();
     for (const e of events) {
       const matchId = Number(e.match_id);
@@ -31,12 +31,11 @@ export default defineCachedEventHandler(
       eventsByMatch.get(matchId)!.push({ ...e, parsedMinute: parseMinute(e.minute) });
     }
 
-    // Compute per-team data
+    // Prepare result: only matches where first scoring team kept clean sheet
     const teamStats: Record<
       string,
       {
-        scored_first: number;
-        scored_first_and_clean: number;
+        count: number;
         matches: {
           match: any;
           goals: any[];
@@ -50,12 +49,11 @@ export default defineCachedEventHandler(
 
       if (matchGoals.length === 0) continue;
 
-      // Sort to find first goal
+      // Sort by parsed minute to find the first goal
       matchGoals.sort((a, b) => a.parsedMinute - b.parsedMinute);
       const firstGoal = matchGoals[0];
       const firstTeam = firstGoal.team;
 
-      // Validate final score
       if (!match.final_score || !match.final_score.includes('-')) continue;
 
       const parts = match.final_score.split('-');
@@ -72,41 +70,37 @@ export default defineCachedEventHandler(
       } else if (firstTeam === match.away_team) {
         concededGoals = homeScore;
       } else {
-        continue;
+        continue; // Invalid team
       }
 
-      // Initialize team stats
+      // Only care about clean sheet after scoring first
+      if (concededGoals !== 0) continue;
+
+      // Add to result
       if (!teamStats[firstTeam]) {
         teamStats[firstTeam] = {
-          scored_first: 0,
-          scored_first_and_clean: 0,
+          count: 0,
           matches: [],
         };
       }
 
-      teamStats[firstTeam].scored_first += 1;
-
-      if (concededGoals === 0) {
-        teamStats[firstTeam].scored_first_and_clean += 1;
-      }
-
+      teamStats[firstTeam].count += 1;
       teamStats[firstTeam].matches.push({
         match,
         goals: matchGoals,
       });
     }
 
-    // Return result
+    // Format output
     const result = Object.entries(teamStats).map(([team, data]) => ({
       team,
-      scored_first: data.scored_first,
-      scored_first_and_clean: data.scored_first_and_clean,
+      clean_sheet_after_scoring_first: data.count,
       matches: data.matches,
     }));
 
     return result;
   },
   {
-    maxAge: 60 * 60 * 24, // cache for 24 hours
+    maxAge: 60 * 60 * 24, // 24 hours
   }
 );
