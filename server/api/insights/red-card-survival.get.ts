@@ -1,24 +1,98 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
 export default defineCachedEventHandler(
-  async (event) => {
+  async (_) => {
     const { databaseUrl } = useRuntimeConfig();
     const db = neon(databaseUrl);
-    const result = await db`SELECT e.team, COUNT(*) FILTER (WHERE final_result != 'loss') AS red_but_not_lost
-FROM matches m
-JOIN events e ON e.match_id = m.id AND e.type='red_card' AND e.description ILIKE '%red%'
-JOIN LATERAL (
-    SELECT CASE
-        WHEN e.team = home_team AND split_part(final_score,'-',1)::int > split_part(final_score,'-',2)::int THEN 'win'
-        WHEN e.team = away_team AND split_part(final_score,'-',2)::int > split_part(final_score,'-',1)::int THEN 'win'
-        WHEN split_part(final_score,'-',1)::int = split_part(final_score,'-',2)::int THEN 'draw'
-        ELSE 'loss'
-    END AS final_result
-) r ON true
-GROUP BY e.team;`;
+
+    // --- 1️⃣ Fetch data ---
+    const matches = await db`SELECT * FROM matches;`;
+    const redEvents =
+      await db`SELECT * FROM events WHERE type='red_card' AND description ILIKE '%red%';`;
+
+    // --- 2️⃣ Create matches map ---
+    // eslint-disable-next-line
+    const matchesById = new Map<number, any>();
+    for (const match of matches) {
+      matchesById.set(Number(match.id), match);
+    }
+
+    // --- 3️⃣ Stats container ---
+    const teamStats: Record<
+      string,
+      {
+        red_but_not_lost: number;
+        matches: {
+          // eslint-disable-next-line
+          match: any;
+          // eslint-disable-next-line
+          red_card_event: any;
+          final_result: string;
+        }[];
+      }
+    > = {};
+
+    // --- 4️⃣ Process each red card event ---
+    for (const e of redEvents) {
+      const matchId = Number(e.match_id);
+      const match = matchesById.get(matchId);
+      if (!match) continue;
+
+      if (!match.final_score || !match.final_score.includes("-")) continue;
+      const [homeRaw, awayRaw] = match.final_score.split("-");
+      const homeScore = parseInt(homeRaw.trim(), 10);
+      const awayScore = parseInt(awayRaw.trim(), 10);
+      if (isNaN(homeScore) || isNaN(awayScore)) continue;
+
+      const homeTeam = match.home_team;
+      const awayTeam = match.away_team;
+      const team = e.team;
+
+      // Determine final result for the team
+      let finalResult: string;
+      if (team === homeTeam) {
+        finalResult =
+          homeScore > awayScore
+            ? "win"
+            : homeScore === awayScore
+              ? "draw"
+              : "loss";
+      } else if (team === awayTeam) {
+        finalResult =
+          awayScore > homeScore
+            ? "win"
+            : homeScore === awayScore
+              ? "draw"
+              : "loss";
+      } else {
+        continue; // Team not in match
+      }
+
+      if (finalResult !== "loss") {
+        if (!teamStats[team]) {
+          teamStats[team] = {
+            red_but_not_lost: 0,
+            matches: [],
+          };
+        }
+
+        teamStats[team].red_but_not_lost++;
+        teamStats[team].matches.push({
+          match,
+          red_card_event: e,
+          final_result: finalResult,
+        });
+      }
+    }
+
+    // --- 5️⃣ Format result ---
+    const result = Object.entries(teamStats).map(([team, data]) => ({
+      team,
+      red_but_not_lost: data.red_but_not_lost,
+      matches: data.matches,
+    }));
+
     return result;
   },
-  {
-    maxAge: 60 * 60 * 24,
-  }
+  { maxAge: 60 * 60 * 24 },
 );

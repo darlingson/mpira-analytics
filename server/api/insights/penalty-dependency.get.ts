@@ -1,7 +1,7 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
 export default defineCachedEventHandler(
-  async (event) => {
+  async (_) => {
     const { databaseUrl } = useRuntimeConfig();
     const db = neon(databaseUrl);
     const result = await db`SELECT team,
@@ -14,5 +14,5 @@ GROUP BY team;`;
   },
   {
     maxAge: 60 * 60 * 24,
-  }
+  },
 );

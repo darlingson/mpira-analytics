@@ -1,99 +1,120 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
-export default defineCachedEventHandler(async (event) => {
-  const { databaseUrl } = useRuntimeConfig();
-  const db = neon(databaseUrl);
+export default defineCachedEventHandler(
+  async (_) => {
+    const { databaseUrl } = useRuntimeConfig();
+    const db = neon(databaseUrl);
 
-  // 1. Fetch all matches
-  const matches = await db`SELECT * FROM matches;`;
+    // --- 1️⃣ Fetch data ---
+    const matches = await db`SELECT * FROM matches;`;
+    const events = await db`SELECT * FROM events WHERE type = 'goal';`;
 
-  // 2. Fetch all goal events
-  const events = await db`SELECT * FROM events WHERE type = 'goal';`;
-
-  // Helper to parse minute string to number
-  const parseMinute = (minuteStr: string | null): number => {
-    if (!minuteStr) return 9999;
-
-    const cleaned = minuteStr.replace(/'/g, '');
-    if (/^\d+$/.test(cleaned)) return parseInt(cleaned, 10);
-
-    if (/^\d+\+\d+$/.test(cleaned)) {
-      const [base, extra] = cleaned.split('+').map(Number);
-      return base + extra;
-    }
-
-    return 9999; // for "LIVE", "HT", etc.
-  };
-
-  // Group events by match_id
-  const eventsByMatch = events.reduce((acc, event) => {
-    if (!acc[event.match_id]) acc[event.match_id] = [];
-    acc[event.match_id].push(event);
-    return acc;
-  }, {} as Record<number, typeof events>);
-
-  // Map matches by id for easy lookup
-  const matchesById = Object.fromEntries(matches.map((m) => [m.id, m]));
-
-  // For each match, find the first goal event (lowest minute)
-  // Then check if the team that scored first lost the match
-  const heartbreaks: Record<
-    string,
-    {
-      scored_first_but_lost: number;
-      matches: {
-        match: typeof matches[0];
-        goals: typeof events;
-        first_goal_team: string;
-      }[];
-    }
-  > = {};
-
-  for (const match of matches) {
-    const matchGoals = eventsByMatch[match.id] || [];
-
-    if (matchGoals.length === 0) continue;
-
-    // Sort goals by parsed minute
-    matchGoals.sort((a:any, b:any) => parseMinute(a.minute) - parseMinute(b.minute));
-
-    const firstGoal = matchGoals[0];
-    const firstGoalTeam = firstGoal.team;
-
-    if (!match.final_score || !firstGoalTeam) continue;
-
-    const [homeScore, awayScore] = match.final_score
-      .split('-')
-      .map((s:any) => parseInt(s.trim(), 10));
-
-    // Determine if first scoring team lost
-    const firstTeamLost =
-      (firstGoalTeam === match.home_team && homeScore < awayScore) ||
-      (firstGoalTeam === match.away_team && awayScore < homeScore);
-
-    if (firstTeamLost) {
-      if (!heartbreaks[firstGoalTeam]) {
-        heartbreaks[firstGoalTeam] = {
-          scored_first_but_lost: 0,
-          matches: [],
-        };
+    // --- 2️⃣ Safe minute parsing ---
+    const parseMinute = (minute: string | null): number => {
+      if (!minute) return 9999;
+      const cleaned = minute.replace(/'/g, "");
+      if (/^\d+$/.test(cleaned)) return parseInt(cleaned, 10);
+      if (/^\d+\+\d+$/.test(cleaned)) {
+        const [base, extra] = cleaned.split("+").map(Number);
+        return base + extra;
       }
+      return 9999;
+    };
 
-      heartbreaks[firstGoalTeam].scored_first_but_lost += 1;
-      heartbreaks[firstGoalTeam].matches.push({
-        match,        // full match object exactly as is
-        goals: matchGoals,  // all goal events exactly as is
-        first_goal_team: firstGoalTeam,
+    // --- 3️⃣ Group goals by match ---
+    // eslint-disable-next-line
+    const eventsByMatch = new Map<number, any[]>();
+    for (const e of events) {
+      const matchId = Number(e.match_id);
+      if (!eventsByMatch.has(matchId)) {
+        eventsByMatch.set(matchId, []);
+      }
+      eventsByMatch.get(matchId)!.push({
+        ...e,
+        parsedMinute: parseMinute(e.minute),
       });
     }
-  }
 
-  // Return heartbreak object with full matches and goal events
-  return Object.entries(heartbreaks).map(([team, data]) => ({
-    team,
-    scored_first_but_lost: data.scored_first_but_lost,
-    matches: data.matches,
-  }));
-}, {
-  maxAge: 60 * 60 * 24,
-});
+    // --- 4️⃣ Stats container ---
+    const teamStats: Record<
+      string,
+      {
+        scored_first_and_lost: number;
+        matches: {
+          // eslint-disable-next-line
+          match: any;
+          // eslint-disable-next-line
+          first_goal: any;
+          // eslint-disable-next-line
+          all_goals: any[];
+          winner: string | null;
+          loser: string | null;
+        }[];
+      }
+    > = {};
+
+    // --- 5️⃣ Process each match ---
+    for (const match of matches) {
+      const matchId = Number(match.id);
+      const matchGoals = eventsByMatch.get(matchId) || [];
+
+      if (!match.final_score || !match.final_score.includes("-")) continue;
+      const [homeRaw, awayRaw] = match.final_score.split("-");
+      const homeScore = parseInt(homeRaw.trim(), 10);
+      const awayScore = parseInt(awayRaw.trim(), 10);
+      if (isNaN(homeScore) || isNaN(awayScore)) continue;
+
+      const homeTeam = match.home_team;
+      const awayTeam = match.away_team;
+
+      // Determine match winner / loser
+      let winner: string | null = null;
+      let loser: string | null = null;
+      if (homeScore > awayScore) {
+        winner = homeTeam;
+        loser = awayTeam;
+      } else if (awayScore > homeScore) {
+        winner = awayTeam;
+        loser = homeTeam;
+      } else {
+        continue; // draw — no loser
+      }
+
+      if (matchGoals.length === 0) continue;
+
+      // Sort by earliest goal
+      matchGoals.sort((a, b) => a.parsedMinute - b.parsedMinute);
+      const firstGoal = matchGoals[0];
+      const firstTeam = firstGoal.team;
+
+      // If first-scoring team ended up losing
+      if (firstTeam === loser) {
+        if (!teamStats[firstTeam]) {
+          teamStats[firstTeam] = {
+            scored_first_and_lost: 0,
+            matches: [],
+          };
+        }
+
+        teamStats[firstTeam].scored_first_and_lost++;
+        teamStats[firstTeam].matches.push({
+          match,
+          first_goal: firstGoal,
+          all_goals: matchGoals,
+          winner,
+          loser,
+        });
+      }
+    }
+
+    // --- 6️⃣ Format result ---
+    const result = Object.entries(teamStats).map(([team, data]) => ({
+      team,
+      scored_first_and_lost: data.scored_first_and_lost,
+      matches: data.matches,
+    }));
+
+    return result;
+  },
+  { maxAge: 60 * 60 * 24 },
+);
