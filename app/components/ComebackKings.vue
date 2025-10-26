@@ -1,70 +1,68 @@
 <script setup lang="ts">
-// Data setup in the Vue 3 Composition API
-const comebackData = [
-    {
-        team: "Nyasa Big Bullets",
-        comebacks: 5,
-        matches: [
-            {
-                match: {
-                    home_team: "Nyasa Big Bullets",
-                    away_team: "Silver Strikers",
-                    final_score: "3 - 2",
-                    match_date: "15/03/2025",
-                },
-                events: [
-                    {
-                        minute: "23'",
-                        team: "Silver Strikers",
-                        player: "John Banda",
-                        score_at_event: "0 - 1",
-                    },
-                    {
-                        minute: "45'",
-                        team: "Silver Strikers",
-                        player: "Patrick Mwaungulu",
-                        score_at_event: "0 - 2",
-                    },
-                    {
-                        minute: "67'",
-                        team: "Nyasa Big Bullets",
-                        player: "Hassan Kajoke",
-                        score_at_event: "1 - 2",
-                    },
-                    {
-                        minute: "78'",
-                        team: "Nyasa Big Bullets",
-                        player: "Babatunde Adepoju",
-                        score_at_event: "2 - 2",
-                    },
-                    {
-                        minute: "89'",
-                        team: "Nyasa Big Bullets",
-                        player: "Hassan Kajoke",
-                        score_at_event: "3 - 2",
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        team: "Silver Strikers",
-        comebacks: 3,
-        matches: [],
-    },
-    {
-        team: "Mighty Mukuru Wanderers",
-        comebacks: 4,
-        matches: [],
-    },
-];
+/* ---------- TYPES (copy the ones you already have) ---------- */
+export interface Matches {
+    team: string;
+    comeback_wins: number;
+    matches: MatchElement[];
+}
+
+export interface MatchElement {
+    match: PurpleMatch;
+    all_goals: AllGoal[];
+    comeback_moments: ComebackMoment[];
+}
+
+export interface PurpleMatch {
+    id: number;
+    season: string;
+    match_date: string;
+    home_team: string;
+    away_team: string;
+    final_score: string;
+    half_time: string;
+}
+
+export interface AllGoal {
+    id: number;
+    match_id: number;
+    minute: string;
+    player: string;
+    team: string;
+    type: Type;
+    description: string;
+    score_at_event: string;
+    parsedMinute: number;
+}
+
+enum Type {
+    Goal = "goal",
+}
+
+export interface ComebackMoment {
+    minute: number;
+    score: string;
+}
+
+/* ---------- REACTIVE STATE ---------- */
+const comebackData = ref<Matches[]>([]);
+
+/* ---------- FETCH ---------- */
+const fetchComebackKings = async () => {
+    try {
+        const res = await $fetch<Matches[]>("/api/insights/comeback-kings");
+        comebackData.value = res;
+    } catch (e) {
+        console.error("Failed to load comeback kings", e);
+    }
+};
+
+onMounted(fetchComebackKings);
 </script>
 
 <template>
     <section>
         <div class="flex items-center gap-3 mb-8">
             <div class="rounded-lg bg-primary p-3">
-                <!-- Lucide TrendingUp icon using the Nuxt UI/Iconify component -->
                 <UIcon
                     name="lucide:trending-up"
                     class="h-8 w-8 text-primary-foreground"
@@ -81,7 +79,6 @@ const comebackData = [
         </div>
 
         <div class="grid gap-6">
-            <!-- Outer iteration (v-for) for each team -->
             <Card
                 v-for="(team, idx) in comebackData"
                 :key="team.team"
@@ -98,39 +95,37 @@ const comebackData = [
                             <h3 class="text-2xl font-bold">{{ team.team }}</h3>
                             <p class="text-muted-foreground">
                                 <span class="text-accent font-bold text-xl">{{
-                                    team.comebacks
+                                    team.comeback_wins
                                 }}</span>
                                 comeback victories
                             </p>
                         </div>
                     </div>
                     <Badge variant="secondary" class="text-lg px-4 py-2">
-                        {{ team.comebacks }} wins
+                        {{ team.comeback_wins }} wins
                     </Badge>
                 </div>
 
-                <!-- Conditional rendering (v-if) for matches -->
-                <div v-if="team.matches.length > 0" class="space-y-4">
-                    <!-- Inner iteration for match details -->
+                <div v-if="team.matches.length" class="space-y-4">
                     <div
-                        v-for="(match, matchIdx) in team.matches"
+                        v-for="(matchEl, matchIdx) in team.matches"
                         :key="matchIdx"
                         class="rounded-lg border border-border bg-background p-4"
                     >
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-4">
                                 <span class="font-bold">{{
-                                    match.match.home_team
+                                    matchEl.match.home_team
                                 }}</span>
                                 <span class="text-2xl font-bold text-primary">{{
-                                    match.match.final_score
+                                    matchEl.match.final_score
                                 }}</span>
                                 <span class="font-bold">{{
-                                    match.match.away_team
+                                    matchEl.match.away_team
                                 }}</span>
                             </div>
                             <span class="text-sm text-muted-foreground">{{
-                                match.match.match_date
+                                matchEl.match.match_date
                             }}</span>
                         </div>
 
@@ -140,28 +135,26 @@ const comebackData = [
                             >
                                 Match Timeline
                             </p>
-                            <!-- Deepest iteration for events -->
                             <div
-                                v-for="(event, eventIdx) in match.events"
-                                :key="eventIdx"
+                                v-for="(goal, goalIdx) in matchEl.all_goals"
+                                :key="goalIdx"
                                 class="flex items-center gap-3 text-sm"
                             >
-                                <Badge variant="outline" class="font-mono">
-                                    {{ event.minute }}
-                                </Badge>
+                                <Badge variant="outline" class="font-mono">{{
+                                    goal.minute
+                                }}</Badge>
                                 <span class="font-medium">{{
-                                    event.player
+                                    goal.player
                                 }}</span>
                                 <span class="text-muted-foreground"
-                                    >({{ event.team }})</span
+                                    >({{ goal.team }})</span
                                 >
-                                <!-- Lucide ArrowRight icon -->
                                 <UIcon
                                     name="lucide:arrow-right"
                                     class="h-4 w-4 text-muted-foreground"
                                 />
                                 <span class="font-bold text-accent">{{
-                                    event.score_at_event
+                                    goal.score_at_event
                                 }}</span>
                             </div>
                         </div>
