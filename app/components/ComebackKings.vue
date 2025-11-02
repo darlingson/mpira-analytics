@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/* ---------- TYPES (copy the ones you already have) ---------- */
+import { ref, onMounted } from "vue";
 export interface Matches {
     team: string;
     comeback_wins: number;
@@ -43,14 +43,14 @@ export interface ComebackMoment {
     score: string;
 }
 
-/* ---------- REACTIVE STATE ---------- */
-const comebackData = ref<Matches[]>([]);
+type MatchesUI = Matches & { _open?: boolean };
 
-/* ---------- FETCH ---------- */
+const comebackData = ref<MatchesUI[]>([]);
+
 const fetchComebackKings = async () => {
     try {
         const res = await $fetch<Matches[]>("/api/insights/comeback-kings");
-        comebackData.value = res;
+        comebackData.value = res.map((t) => ({ ...t, _open: false }));
     } catch (e) {
         console.error("Failed to load comeback kings", e);
     }
@@ -79,12 +79,12 @@ onMounted(fetchComebackKings);
         </div>
 
         <div class="grid gap-6">
-            <Card
+            <UCard
                 v-for="(team, idx) in comebackData"
                 :key="team.team"
                 class="p-6 bg-card border-border hover:border-primary transition-colors"
             >
-                <div class="flex items-start justify-between mb-6">
+                <div class="flex items-start justify-between">
                     <div class="flex items-center gap-4">
                         <div
                             class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-2xl font-bold text-primary"
@@ -101,66 +101,89 @@ onMounted(fetchComebackKings);
                             </p>
                         </div>
                     </div>
-                    <Badge variant="secondary" class="text-lg px-4 py-2">
-                        {{ team.comeback_wins }} wins
-                    </Badge>
+
+                    <UButton
+                        v-if="team.matches.length"
+                        variant="ghost"
+                        size="sm"
+                        square
+                        @click="team._open = !team._open"
+                    >
+                        {{ team._open }}
+                        <UIcon
+                            :name="
+                                team._open
+                                    ? 'lucide:chevron-up'
+                                    : 'lucide:chevron-down'
+                            "
+                            class="h-5 w-5"
+                        />
+                    </UButton>
                 </div>
 
-                <div v-if="team.matches.length" class="space-y-4">
+                <UCollapse v-model:open="team._open">
                     <div
-                        v-for="(matchEl, matchIdx) in team.matches"
-                        :key="matchIdx"
-                        class="rounded-lg border border-border bg-background p-4"
+                        v-if="team.matches.length && team._open"
+                        class="space-y-4 mt-6"
                     >
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-4">
-                                <span class="font-bold">{{
-                                    matchEl.match.home_team
-                                }}</span>
-                                <span class="text-2xl font-bold text-primary">{{
-                                    matchEl.match.final_score
-                                }}</span>
-                                <span class="font-bold">{{
-                                    matchEl.match.away_team
+                        <div
+                            v-for="(matchEl, matchIdx) in team.matches"
+                            :key="matchIdx"
+                            class="rounded-lg border border-border bg-background p-4"
+                        >
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-4">
+                                    <span class="font-bold">{{
+                                        matchEl.match.home_team
+                                    }}</span>
+                                    <span
+                                        class="text-2xl font-bold text-primary"
+                                        >{{ matchEl.match.final_score }}</span
+                                    >
+                                    <span class="font-bold">{{
+                                        matchEl.match.away_team
+                                    }}</span>
+                                </div>
+                                <span class="text-sm text-muted-foreground">{{
+                                    matchEl.match.match_date
                                 }}</span>
                             </div>
-                            <span class="text-sm text-muted-foreground">{{
-                                matchEl.match.match_date
-                            }}</span>
-                        </div>
 
-                        <div class="space-y-2">
-                            <p
-                                class="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3"
-                            >
-                                Match Timeline
-                            </p>
-                            <div
-                                v-for="(goal, goalIdx) in matchEl.all_goals"
-                                :key="goalIdx"
-                                class="flex items-center gap-3 text-sm"
-                            >
-                                <Badge variant="outline" class="font-mono">{{
-                                    goal.minute
-                                }}</Badge>
-                                <span class="font-medium">{{
-                                    goal.player
-                                }}</span>
-                                <span class="text-muted-foreground"
-                                    >({{ goal.team }})</span
+                            <div class="space-y-2">
+                                <p
+                                    class="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3"
                                 >
-                                <UIcon
-                                    name="lucide:arrow-right"
-                                    class="h-4 w-4 text-muted-foreground"
-                                />
-                                <span class="font-bold text-accent">{{
-                                    goal.score_at_event
-                                }}</span>
+                                    Match Timeline
+                                </p>
+                                <div
+                                    v-for="(goal, goalIdx) in matchEl.all_goals"
+                                    :key="goalIdx"
+                                    class="flex items-center gap-3 text-sm"
+                                >
+                                    <Badge
+                                        variant="outline"
+                                        class="font-mono"
+                                        >{{ goal.minute }}</Badge
+                                    >
+                                    <span class="font-medium">{{
+                                        goal.player
+                                    }}</span>
+                                    <span class="text-muted-foreground"
+                                        >({{ goal.team }})</span
+                                    >
+                                    <UIcon
+                                        name="lucide:arrow-right"
+                                        class="h-4 w-4 text-muted-foreground"
+                                    />
+                                    <span class="font-bold text-accent">{{
+                                        goal.score_at_event
+                                    }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </Card>
+                </UCollapse>
+            </UCard>
         </div>
     </section>
 </template>

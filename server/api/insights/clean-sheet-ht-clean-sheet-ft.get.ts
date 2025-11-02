@@ -1,10 +1,11 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
 export default defineCachedEventHandler(
-  async (event) => {
+  async (_) => {
     const { databaseUrl } = useRuntimeConfig();
     const db = neon(databaseUrl);
-    const result = await db`SELECT team, COUNT(*) FILTER (WHERE fh_conceded=0 AND fh_conceded=final_conceded) AS fh_clean_kept_clean
+    const result =
+      await db`SELECT team, COUNT(*) FILTER (WHERE fh_conceded=0 AND fh_conceded=final_conceded) AS fh_clean_kept_clean
 FROM (
     SELECT m.*,
            split_part(half_time,'-',2)::int AS home_fh_conceded,
@@ -22,5 +23,5 @@ GROUP BY team;`;
   },
   {
     maxAge: 60 * 60 * 24,
-  }
+  },
 );
