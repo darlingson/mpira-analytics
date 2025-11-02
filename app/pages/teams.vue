@@ -71,7 +71,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useFetch } from "#app";
 
 interface Team {
     id: number;
@@ -95,7 +94,8 @@ onMounted(() => fetchTeams());
 
 const filteredTeams = computed(() => {
     if (!search.value) return teams.value;
-    return teams.value.filter((team) =>
+    // eslint-disable-next-line
+    return teams.value.filter((team: any) =>
         team.name.toLowerCase().includes(search.value.toLowerCase()),
     );
 });

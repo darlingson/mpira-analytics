@@ -1,10 +1,11 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from "@neondatabase/serverless";
 
 export default defineCachedEventHandler(
-  async (event) => {
+  async (_) => {
     const { databaseUrl } = useRuntimeConfig();
     const db = neon(databaseUrl);
-    const result = await db`SELECT team, MIN(minute::int) AS fastest_goal_seconds,
+    const result =
+      await db`SELECT team, MIN(minute::int) AS fastest_goal_seconds,
        FIRST_VALUE(final_result) OVER (PARTITION BY team ORDER BY minute::int) AS match_result
 FROM (
     SELECT m.*, e.team, e.minute,
@@ -22,5 +23,5 @@ GROUP BY team;`;
   },
   {
     maxAge: 60 * 60 * 24,
-  }
+  },
 );
