@@ -13,6 +13,7 @@ import CleanSheets from "~/components/CleanSheets.vue";
 
 <template>
     <main class="min-h-screen bg-background">
+        <h1>Malawi Football Analytics Platform</h1>
         <header class="border-b border-border bg-card">
             <div class="container mx-auto px-4 py-6">
                 <h1 class="text-4xl font-bold tracking-tight text-balance">
