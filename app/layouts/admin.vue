@@ -72,10 +72,10 @@ const route = useRoute();
 
 const navItems = [
     { label: "Dashboard", to: "/admin/dashboard", icon: "i-heroicons-home" },
-    { label: "Teams", to: "/admin/teams", icon: "i-heroicons-users" },
-    { label: "Matches", to: "/admin/matches", icon: "i-heroicons-sparkles" },
-    { label: "Players", to: "/admin/players", icon: "i-heroicons-trophy" },
-    { label: "Settings", to: "/admin/settings", icon: "i-heroicons-gear" }
+    { label: "Teams", to: "/admin/dashboard/teams", icon: "i-heroicons-users" },
+    { label: "Matches", to: "/admin/dashboard/matches", icon: "i-heroicons-sparkles" },
+    { label: "Players", to: "/admin/dashboard/players", icon: "i-heroicons-trophy" },
+    { label: "Settings", to: "/admin/dashboard/settings", icon: "i-heroicons-gear" }
 ];
 </script>
 

@@ -14,9 +14,6 @@ interface Match {
     away_team_id: number;
 }
 
-interface DisplayMatch extends Match {
-    status: 'Completed' | 'Upcoming' | 'In-Play' | 'Unknown';
-}
 
 definePageMeta({
     layout: 'admin',
@@ -55,8 +52,8 @@ const simplifiedMatches = computed(() => {
     <div class="space-y-8 p-8">
 
         <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-white">Dashboard Overview ⚽</h1>
-            <UButton icon="i-heroicons-plus" size="md" color="primary" variant="solid" to="/admin/matches/new">
+            <h1 class="text-3xl font-bold text-white">Dashboard Overview</h1>
+            <UButton icon="i-heroicons-plus" size="md" color="primary" variant="solid" to="/admin/dashboard/matches/new">
                 + Add New Match
             </UButton>
         </div>
@@ -68,8 +65,8 @@ const simplifiedMatches = computed(() => {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition"
-                    :ui="{ body: { padding: 'p-0', background: 'bg-gray-800' } }">
-                    <NuxtLink to="/admin/matches/new">
+                    >
+                    <NuxtLink to="/admin/dashboard/matches/new">
                         <div class="h-40 bg-gray-600 rounded-t-lg">
                             <img src="https://picsum.photos/400/200?random=1" alt="Add New Match"
                                 class="w-full h-full object-cover rounded-t-lg">
@@ -81,9 +78,8 @@ const simplifiedMatches = computed(() => {
                     </NuxtLink>
                 </UCard>
 
-                <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition"
-                    :ui="{ body: { padding: 'p-0', background: 'bg-gray-800' } }">
-                    <NuxtLink to="/admin/teams/new">
+                <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition">
+                    <NuxtLink to="/admin/dashboard/teams/new">
                         <div class="h-40 bg-gray-600 rounded-t-lg">
                             <img src="https://picsum.photos/400/200?random=2" alt="Add New Team"
                                 class="w-full h-full object-cover rounded-t-lg">
@@ -95,9 +91,8 @@ const simplifiedMatches = computed(() => {
                     </NuxtLink>
                 </UCard>
 
-                <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition"
-                    :ui="{ body: { padding: 'p-0', background: 'bg-gray-800' } }">
-                    <NuxtLink to="/admin/players">
+                <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition">
+                    <NuxtLink to="/admin/dashboard/players">
                         <div class="h-40 bg-gray-600 rounded-t-lg">
                             <img src="https://picsum.photos/400/200?random=3" alt="Manage Players"
                                 class="w-full h-full object-cover rounded-t-lg">
