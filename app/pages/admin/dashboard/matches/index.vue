@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, resolveComponent } from 'vue'
 const loading = ref(false);
+import type { TableColumn } from '@nuxt/ui'
 
-
+const router = useRouter()
 interface Match {
     id: number
     season: string
@@ -21,7 +22,13 @@ interface MatchesResponse {
     page: number
     pageSize: number
 }
-
+interface SimplifiedMatch {
+    id: number
+    match: string
+    date: string
+    status: string
+    actions: string
+}
 definePageMeta({
     layout: 'admin',
 })
@@ -70,6 +77,37 @@ const simplifiedMatches = computed(() => {
         }
     })
 })
+
+
+const columns: TableColumn<SimplifiedMatch>[] = [
+    {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => `#${row.getValue('id')}`
+    },
+    {
+        accessorKey: 'match',
+        header: 'Match',
+    },
+    {
+        accessorKey: 'date',
+        header: 'Date',
+    },
+    {
+        accessorKey: 'status',
+        header: 'Status'
+    },
+    {
+        accessorKey: 'Actions',
+        header: () => h('div', { class: 'text-right' }, 'Amount'),
+        cell: ({ row }) => {
+            return h('button', {
+                class: 'px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700',
+                onClick: () => router.push(`/admin/dashboard/matches/${row.getValue('id')}`)
+            }, 'View')
+        }
+    }
+]
 </script>
 
 <template>
@@ -86,11 +124,11 @@ const simplifiedMatches = computed(() => {
             </div>
 
             <div class="mb-4 flex gap-2">
-                <input v-model="search" placeholder="Search teams..." class="px-2 py-1 rounded border" />
+                <input v-model="search" placeholder="Search matches..." class="px-2 py-1 rounded border" />
             </div>
 
-            <UTable :loading loading-color="primary" loading-animation="carousel" :data="simplifiedMatches"
-                class="flex-1" />
+            <UTable :columns="columns" :loading loading-color="primary" loading-animation="carousel"
+                :data="simplifiedMatches" class="flex-1" />
 
             <div class="mt-4 flex justify-between items-center text-white">
                 <span>
