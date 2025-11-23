@@ -1,11 +1,13 @@
 <template>
   <UApp>
+    <Analytics />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
   </UApp>
 </template>
 <script setup>
+import { Analytics } from '@vercel/analytics/nuxt'
 useHead({
   title: "Malawi Football Analytics Platform | Insights from Malawi football",
   meta: [

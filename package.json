@@ -19,6 +19,7 @@
     "@nuxt/ui": "^3.3.3",
     "@tresjs/nuxt": "^4.0.0",
     "@unhead/vue": "^2.0.14",
+    "@vercel/analytics": "^1.5.0",
     "chart.js": "^4.5.0",
     "nuxt": "^4.1.1",
     "three": "^0.180.0",
