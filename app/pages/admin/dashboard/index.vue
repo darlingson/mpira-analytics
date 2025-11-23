@@ -1,97 +1,122 @@
-<template>
-  <UContainer class="py-6 space-y-8">
-    <h1 class="text-2xl font-bold">Football Admin Panel</h1>
-
-    <!-- Add Team -->
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">Add Team</h2>
-      </template>
-      <UForm :state="teamForm" @submit="submitTeam">
-        <UInput v-model="teamForm.name" placeholder="Name" class="mb-2" />
-        <UInput v-model="teamForm.team_slug" placeholder="Slug" class="mb-2" />
-        <UInput v-model="teamForm.league" placeholder="League" class="mb-2" />
-        <UInput v-model="teamForm.home_district" placeholder="Home District" class="mb-2" />
-        <UInput v-model="teamForm.home_stadium" placeholder="Home Stadium" class="mb-2" />
-        <UButton type="submit" label="Add Team" />
-      </UForm>
-    </UCard>
-
-    <!-- Add Match -->
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">Add Match</h2>
-      </template>
-      <UForm :state="matchForm" @submit="submitMatch">
-        <UInput v-model="matchForm.season" placeholder="Season" class="mb-2" />
-        <UInput v-model="matchForm.match_date" placeholder="Date (YYYY-MM-DD)" class="mb-2" />
-        <UInput v-model="matchForm.home_team" placeholder="Home Team" class="mb-2" />
-        <UInput v-model="matchForm.away_team" placeholder="Away Team" class="mb-2" />
-        <UInput v-model="matchForm.final_score" placeholder="Final Score (e.g. 2-1)" class="mb-2" />
-        <UInput v-model="matchForm.half_time" placeholder="Half Time Score" class="mb-2" />
-        <UButton type="submit" label="Add Match" />
-      </UForm>
-    </UCard>
-
-    <!-- Add Event -->
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">Add Match Event</h2>
-      </template>
-      <UForm :state="eventForm" @submit="submitEvent">
-        <UInput v-model="eventForm.match_id" placeholder="Match ID" class="mb-2" />
-        <UInput v-model="eventForm.minute" placeholder="Minute" class="mb-2" />
-        <UInput v-model="eventForm.player" placeholder="Player" class="mb-2" />
-        <UInput v-model="eventForm.team" placeholder="Team" class="mb-2" />
-        <UInput v-model="eventForm.type" placeholder="Type (e.g. Goal)" class="mb-2" />
-        <UInput v-model="eventForm.description" placeholder="Description" class="mb-2" />
-        <UInput v-model="eventForm.score_at_event" placeholder="Score at Event" class="mb-2" />
-        <UButton type="submit" label="Add Event" />
-      </UForm>
-    </UCard>
-  </UContainer>
-</template>
-
 <script setup lang="ts">
-const teamForm = reactive({
-  name: '',
-  team_slug: '',
-  league: '',
-  home_district: '',
-  home_stadium: ''
-})
+import type { ColumnDef } from '@tanstack/vue-table'
+import { computed } from 'vue'
 
-const matchForm = reactive({
-  season: '',
-  match_date: '',
-  home_team: '',
-  away_team: '',
-  final_score: '',
-  half_time: ''
-})
-
-const eventForm = reactive({
-  match_id: '',
-  minute: '',
-  player: '',
-  team: '',
-  type: '',
-  description: '',
-  score_at_event: ''
-})
-
-const submitTeam = async () => {
-  await $fetch('/api/teams', { method: 'POST', body: teamForm })
-  Object.keys(teamForm).forEach(k => (teamForm as any)[k] = '')
+interface Match {
+    id: number;
+    season: string;
+    match_date: string;
+    home_team: string;
+    away_team: string;
+    final_score: string;
+    half_time: string;
+    home_team_id: number;
+    away_team_id: number;
 }
 
-const submitMatch = async () => {
-  await $fetch('/api/matches', { method: 'POST', body: matchForm })
-  Object.keys(matchForm).forEach(k => (matchForm as any)[k] = '')
+interface DisplayMatch extends Match {
+    status: 'Completed' | 'Upcoming' | 'In-Play' | 'Unknown';
 }
 
-const submitEvent = async () => {
-  await $fetch('/api/events', { method: 'POST', body: eventForm })
-  Object.keys(eventForm).forEach(k => (eventForm as any)[k] = '')
-}
+definePageMeta({
+    layout: 'admin',
+})
+
+const { data: matches } = await useLazyFetch<Match[]>('/api/matches/recent', {
+    default: () => [] as Match[],
+})
+
+const simplifiedMatches = computed(() => {
+    return matches.value.map(m => {
+        const today = new Date()
+        const matchDay = new Date(m.match_date)
+        let status = ""
+
+        if (matchDay > today) {
+            status = "Upcoming"
+        } else if (!m.final_score) {
+            status = "Pending"
+        } else {
+            status = "Completed"
+        }
+
+        return {
+            match: `${m.home_team} vs ${m.away_team}`,
+            date: m.match_date,
+            status,
+            actions: "View"
+        }
+    })
+})
+
 </script>
+
+<template>
+    <div class="space-y-8 p-8">
+
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-white">Dashboard Overview ⚽</h1>
+            <UButton icon="i-heroicons-plus" size="md" color="primary" variant="solid" to="/admin/matches/new">
+                + Add New Match
+            </UButton>
+        </div>
+
+        <hr class="border-gray-700">
+
+        <section>
+            <h2 class="text-2xl font-semibold mb-6 text-white">Quick Actions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition"
+                    :ui="{ body: { padding: 'p-0', background: 'bg-gray-800' } }">
+                    <NuxtLink to="/admin/matches/new">
+                        <div class="h-40 bg-gray-600 rounded-t-lg">
+                            <img src="https://picsum.photos/400/200?random=1" alt="Add New Match"
+                                class="w-full h-full object-cover rounded-t-lg">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-bold mb-2 text-white">Add New Match</h3>
+                            <p class="text-gray-400 text-sm">Create a new match entry with teams, date, and venue.</p>
+                        </div>
+                    </NuxtLink>
+                </UCard>
+
+                <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition"
+                    :ui="{ body: { padding: 'p-0', background: 'bg-gray-800' } }">
+                    <NuxtLink to="/admin/teams/new">
+                        <div class="h-40 bg-gray-600 rounded-t-lg">
+                            <img src="https://picsum.photos/400/200?random=2" alt="Add New Team"
+                                class="w-full h-full object-cover rounded-t-lg">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-bold mb-2 text-white">Add New Team</h3>
+                            <p class="text-gray-400 text-sm">Add a new team to the database with its details.</p>
+                        </div>
+                    </NuxtLink>
+                </UCard>
+
+                <UCard class="bg-gray-800 hover:bg-gray-700 border border-gray-700 transition"
+                    :ui="{ body: { padding: 'p-0', background: 'bg-gray-800' } }">
+                    <NuxtLink to="/admin/players">
+                        <div class="h-40 bg-gray-600 rounded-t-lg">
+                            <img src="https://picsum.photos/400/200?random=3" alt="Manage Players"
+                                class="w-full h-full object-cover rounded-t-lg">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-bold mb-2 text-white">Manage Players</h3>
+                            <p class="text-gray-400 text-sm">View, edit, and update player profiles and statistics.</p>
+                        </div>
+                    </NuxtLink>
+                </UCard>
+            </div>
+        </section>
+
+        <hr class="border-gray-700">
+
+        <section>
+            <h2 class="text-2xl font-semibold mb-4 text-white">Recent Match Updates</h2>
+
+            <UTable :data="simplifiedMatches" class="flex-1" />
+        </section>
+    </div>
+</template>

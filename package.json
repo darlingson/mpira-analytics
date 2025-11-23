@@ -24,7 +24,8 @@
     "nuxt": "^4.1.1",
     "three": "^0.180.0",
     "troisjs": "^0.3.4",
-    "vue-chartjs": "^5.3.2"
+    "vue-chartjs": "^5.3.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.3",
