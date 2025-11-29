@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/scripts',
     '@tresjs/nuxt',
-    '@sidebase/nuxt-auth',
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
   ],
   tres: {
     devtools: true,
