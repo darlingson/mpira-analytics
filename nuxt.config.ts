@@ -2,7 +2,13 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts','@tresjs/nuxt'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/eslint',
+    '@nuxt/scripts',
+    '@tresjs/nuxt',
+    '@sidebase/nuxt-auth',
+  ],
   tres: {
     devtools: true,
   },
