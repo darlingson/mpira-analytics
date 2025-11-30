@@ -50,5 +50,4 @@ import CleanSheets from "~/components/CleanSheets.vue";
 </template>
 
 <style scoped>
-/* Add component-specific styles here if needed */
 </style>

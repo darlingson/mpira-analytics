@@ -109,7 +109,6 @@ onMounted(fetchComebackKings);
                         square
                         @click="team._open = !team._open"
                     >
-                        {{ team._open }}
                         <UIcon
                             :name="
                                 team._open
