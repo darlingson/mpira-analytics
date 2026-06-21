@@ -9,12 +9,7 @@ export default defineNuxtConfig({
     '@tresjs/nuxt',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
-    ['@clerk/nuxt', {
-      signInUrl: '/auth',
-      signUpUrl: '/auth',
-      signInFallbackRedirectUrl: '/dashboard',
-      signUpFallbackRedirectUrl: '/dashboard',
-    }],
+    '@clerk/nuxt',
   ],
   tres: {
     devtools: true,
