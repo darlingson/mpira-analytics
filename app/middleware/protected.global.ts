@@ -1,16 +1,9 @@
-// export default defineNuxtRouteMiddleware((to) => {
-//     const protectedRoutes = ["/admin/*",];
-//     if (!protectedRoutes.includes(to.path)) return;
-
-//     const token = useCookie("accessToken");
-//     if (!token.value) return navigateTo("/auth");
-// });
 export default defineNuxtRouteMiddleware((to) => {
-  const token = useCookie("accessToken");
+  const { isSignedIn } = useAuth();
 
-  const adminProtected = /^\/admin(\/|$)/;
+  const protectedRoutes = /^\/(admin|dashboard|teams|players)(\/|$)/;
 
-  if (adminProtected.test(to.path)) {
-    if (!token.value) return navigateTo('/auth');
+  if (protectedRoutes.test(to.path)) {
+    if (!isSignedIn) return navigateTo('/auth');
   }
 });
