@@ -18,7 +18,7 @@
             <NuxtLink to="/players" class="text-sm font-medium text-muted hover:text-default transition-colors">
               Players
             </NuxtLink>
-            <SignOutButton>
+            <SignOutButton redirectUrl="/auth">
               <UButton color="neutral" variant="ghost" size="sm">
                 <UIcon name="i-heroicons-arrow-left-on-rectangle" class="h-5 w-5" />
               </UButton>
