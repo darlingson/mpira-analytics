@@ -44,12 +44,26 @@ export const teams = pgTable("teams", {
 	country: varchar({ length: 100 }),
 });
 
+export const leagues = pgTable("leagues", {
+	id: serial().primaryKey().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	tier: integer().notNull(),
+	country: varchar({ length: 100 }),
+});
+
 export const competitions = pgTable("competitions", {
 	id: serial().primaryKey().notNull(),
+	leagueId: integer("league_id"),
 	name: varchar({ length: 255 }).notNull(),
 	type: varchar({ length: 50 }).notNull(),
 	season: varchar({ length: 50 }).notNull(),
-});
+}, (table) => [
+	foreignKey({
+			columns: [table.leagueId],
+			foreignColumns: [leagues.id],
+			name: "fk_competitions_league"
+		}),
+]);
 
 export const playerTeamHistory = pgTable("player_team_history", {
 	id: serial().primaryKey().notNull(),

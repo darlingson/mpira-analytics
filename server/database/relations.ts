@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { users, refreshTokens, players, playerTeamHistory, teams, competitions, matches, matchEvents } from "./schema";
+import { users, refreshTokens, players, playerTeamHistory, teams, leagues, competitions, matches, matchEvents } from "./schema";
 
 export const refreshTokensRelations = relations(refreshTokens, ({one}) => ({
 	user: one(users, {
@@ -61,7 +61,15 @@ export const matchesRelations = relations(matches, ({one, many}) => ({
 	matchEvents: many(matchEvents),
 }));
 
-export const competitionsRelations = relations(competitions, ({many}) => ({
+export const leaguesRelations = relations(leagues, ({many}) => ({
+	competitions: many(competitions),
+}));
+
+export const competitionsRelations = relations(competitions, ({one, many}) => ({
+	league: one(leagues, {
+		fields: [competitions.leagueId],
+		references: [leagues.id],
+	}),
 	matches: many(matches),
 }));
 
