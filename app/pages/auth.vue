@@ -20,7 +20,7 @@
                 </h1>
             </div>
             <ClerkLoaded>
-                <SignIn />
+                <SignIn routing="hash" afterSignInUrl="/admin/dashboard" afterSignUpUrl="/admin/dashboard" />
             </ClerkLoaded>
             <ClerkLoading>
                 <div class="flex justify-center py-8">
