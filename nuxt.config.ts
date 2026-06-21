@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@tresjs/nuxt',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
+    '@clerk/nuxt'
   ],
   tres: {
     devtools: true,
