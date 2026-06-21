@@ -1,9 +1,9 @@
 export default defineNuxtRouteMiddleware((to) => {
   const { isSignedIn } = useAuth();
 
-  const adminProtected = /^\/admin(\/|$)/;
+  const protectedRoutes = /^\/(admin|dashboard|teams|players)(\/|$)/;
 
-  if (adminProtected.test(to.path)) {
+  if (protectedRoutes.test(to.path)) {
     if (!isSignedIn) return navigateTo('/auth');
   }
 });

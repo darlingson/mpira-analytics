@@ -36,6 +36,21 @@ export const players = pgTable("players", {
 	position: varchar({ length: 50 }),
 });
 
+export const teams = pgTable("teams", {
+	id: serial().primaryKey().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	shortName: varchar("short_name", { length: 50 }),
+	logoUrl: text("logo_url"),
+	country: varchar({ length: 100 }),
+});
+
+export const competitions = pgTable("competitions", {
+	id: serial().primaryKey().notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	type: varchar({ length: 50 }).notNull(),
+	season: varchar({ length: 50 }).notNull(),
+});
+
 export const playerTeamHistory = pgTable("player_team_history", {
 	id: serial().primaryKey().notNull(),
 	playerId: integer("player_id").notNull(),
@@ -58,13 +73,6 @@ export const playerTeamHistory = pgTable("player_team_history", {
 		}),
 	check("check_dates_valid", sql`(end_date IS NULL) OR (end_date >= start_date)`),
 ]);
-
-export const competitions = pgTable("competitions", {
-	id: serial().primaryKey().notNull(),
-	name: varchar({ length: 255 }).notNull(),
-	type: varchar({ length: 50 }).notNull(),
-	season: varchar({ length: 50 }).notNull(),
-});
 
 export const matches = pgTable("matches", {
 	id: serial().primaryKey().notNull(),
@@ -96,14 +104,6 @@ export const matches = pgTable("matches", {
 		}),
 	check("check_teams_different", sql`home_team_id <> away_team_id`),
 ]);
-
-export const teams = pgTable("teams", {
-	id: serial().primaryKey().notNull(),
-	name: varchar({ length: 255 }).notNull(),
-	shortName: varchar("short_name", { length: 50 }),
-	logoUrl: text("logo_url"),
-	country: varchar({ length: 100 }),
-});
 
 export const matchEvents = pgTable("match_events", {
 	id: serial().primaryKey().notNull(),

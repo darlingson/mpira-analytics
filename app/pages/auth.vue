@@ -16,7 +16,7 @@
       </div>
 
       <ClerkLoaded>
-        <SignIn routing="hash" afterSignInUrl="/admin/dashboard" afterSignUpUrl="/admin/dashboard" />
+        <SignIn routing="hash" fallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/dashboard" />
       </ClerkLoaded>
       <ClerkLoading>
         <div class="flex justify-center py-8">
