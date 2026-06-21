@@ -41,18 +41,18 @@
                     size="lg"
                     color="primary"
                     class="hover:scale-105 transition-transform duration-300 shadow-lg shadow-teal-500/20"
-                    to="/home"
+                    to="/auth"
                 >
-                    ⚽ Explore Teams
+                    Sign In
                 </UButton>
                 <UButton
                     size="lg"
                     color="neutral"
                     variant="soft"
                     class="hover:scale-105 transition-transform duration-300"
-                    to="/about"
+                    to="/auth"
                 >
-                    📊 Learn More
+                    Get Started
                 </UButton>
             </div>
         </section>
