@@ -2,17 +2,49 @@
 @import "@nuxt/ui";
 
 @theme static {
-  --font-sans: 'Public Sans', sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --color-green-50: #effdf5;
-  --color-green-100: #d9fbe8;
-  --color-green-200: #b3f5d1;
-  --color-green-300: #75edae;
-  --color-green-400: #00dc82;
-  --color-green-500: #00c16a;
-  --color-green-600: #00a155;
-  --color-green-700: #007f45;
-  --color-green-800: #016538;
-  --color-green-900: #0a5331;
-  --color-green-950: #052e16;
+  --color-accent-50: oklch(0.97 0.014 236.62);
+  --color-accent-100: oklch(0.94 0.033 236.62);
+  --color-accent-200: oklch(0.88 0.059 236.62);
+  --color-accent-300: oklch(0.8 0.089 236.62);
+  --color-accent-400: oklch(0.7 0.12 236.62);
+  --color-accent-500: oklch(0.61 0.146 236.62);
+  --color-accent-600: oklch(0.53 0.158 236.62);
+  --color-accent-700: oklch(0.45 0.148 236.62);
+  --color-accent-800: oklch(0.37 0.118 236.62);
+  --color-accent-900: oklch(0.3 0.077 236.62);
+  --color-accent-950: oklch(0.21 0.04 236.62);
+
+  --animate-gradient: gradient-move 8s ease infinite;
+  --animate-pulse-slow: pulse-slow 8s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glow: glow 4s ease-in-out infinite alternate;
+  --animate-slide-up: slide-up 0.5s ease-out;
+}
+
+@keyframes gradient-move {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes glow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
