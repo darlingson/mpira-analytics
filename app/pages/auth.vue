@@ -1,14 +1,11 @@
 <template>
   <div class="relative min-h-screen flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-sky-900/30 via-neutral-950 to-black" />
-
     <div class="absolute inset-0 -z-10 pointer-events-none" aria-hidden="true">
-      <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-sky-800/40 blur-[120px]" />
-      <div class="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-cyan-800/30 blur-[140px]" />
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(14,165,233,0.04),transparent_40%)]" />
+      <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-primary/20 blur-[120px]" />
+      <div class="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-accent-400/20 blur-[140px]" />
     </div>
 
-    <UCard class="relative z-10 w-full max-w-lg px-10 py-12 rounded-2xl border-neutral-800/40 bg-gradient-to-b from-neutral-900/60 to-neutral-950/60 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+    <UCard class="relative z-10 w-full max-w-lg px-10 py-12 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
       <div class="flex flex-col items-center text-center mb-8">
         <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
           Welcome to
@@ -23,7 +20,7 @@
       </ClerkLoaded>
       <ClerkLoading>
         <div class="flex justify-center py-8">
-          <UIcon name="i-heroicons-arrow-path" class="h-8 w-8 animate-spin text-primary-400" />
+          <UIcon name="i-heroicons-arrow-path" class="h-8 w-8 animate-spin text-primary" />
         </div>
       </ClerkLoading>
     </UCard>

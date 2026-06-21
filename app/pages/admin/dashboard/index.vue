@@ -7,7 +7,7 @@ definePageMeta({ layout: 'admin' })
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold">Dashboard</h1>
     </div>
-    <hr class="border-neutral-700">
-    <p class="text-neutral-400">Welcome to Mpira Stats admin. Content coming soon.</p>
+    <hr class="border-default">
+    <p class="text-muted">Welcome to Mpira Stats admin. Content coming soon.</p>
   </div>
 </template>
