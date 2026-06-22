@@ -9,7 +9,7 @@
             </span>
           </NuxtLink>
           <div class="flex items-center gap-4">
-            <NuxtLink to="/dashboard" class="text-sm font-medium text-muted hover:text-default transition-colors">
+            <NuxtLink to="/matches" class="text-sm font-medium text-muted hover:text-default transition-colors">
               Matches
             </NuxtLink>
             <NuxtLink to="/teams" class="text-sm font-medium text-muted hover:text-default transition-colors">
