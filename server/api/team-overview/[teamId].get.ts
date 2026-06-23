@@ -1,4 +1,5 @@
 import { sql, eq, or, count } from 'drizzle-orm'
+import { matches } from '../../database/schema'
 
 export default defineEventHandler(async (event) => {
   const teamId = Number(getRouterParam(event, 'teamId'))

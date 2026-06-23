@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
         AND m.date::date >= pth.start_date
         AND (pth.end_date IS NULL OR m.date::date <= pth.end_date)
       WHERE me.event_type = 'goal'
-        AND me.match_id = ANY(${matchIds})
+        AND me.match_id = ANY(ARRAY[${sql.join(matchIds, sql`, `)}]::int[])
       ORDER BY me.match_id, me.minute
     `)
     const allGoals = goalsResult.rows as any[]
