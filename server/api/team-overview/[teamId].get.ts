@@ -34,12 +34,9 @@ export default defineEventHandler(async (event) => {
       FROM match_events me
       JOIN matches m ON me.match_id = m.id
       JOIN players p ON me.player_id = p.id
-      JOIN player_team_history pth ON pth.player_id = p.id
+      JOIN player_team_history pth ON pth.player_id = me.player_id AND pth.team_id = ${teamId}
       WHERE me.event_type = 'goal'
         AND (m.home_team_id = ${teamId} OR m.away_team_id = ${teamId})
-        AND pth.team_id = ${teamId}
-        AND m.date::date >= pth.start_date
-        AND (pth.end_date IS NULL OR m.date::date <= pth.end_date)
       GROUP BY p.id, p.name
       ORDER BY goals DESC
       LIMIT 5

@@ -56,10 +56,7 @@ export default defineEventHandler(async (event) => {
       FROM match_events me
       JOIN matches m ON me.match_id = m.id
       JOIN players p ON me.player_id = p.id
-      LEFT JOIN player_team_history pth ON pth.player_id = me.player_id
-        AND pth.team_id IN (m.home_team_id, m.away_team_id)
-        AND m.date::date >= pth.start_date
-        AND (pth.end_date IS NULL OR m.date::date <= pth.end_date)
+      LEFT JOIN player_team_history pth ON pth.player_id = me.player_id AND pth.team_id = ${teamId}
       WHERE me.event_type = 'goal'
         AND me.match_id = ANY(ARRAY[${sql.join(matchIds, sql`, `)}]::int[])
       ORDER BY me.match_id, me.minute
@@ -104,7 +101,7 @@ export default defineEventHandler(async (event) => {
             fastestGoal = { minute: goal.minute, player: goal.player_name, opponent: opponentName, date: goal.match_date }
           }
 
-          if (ourScore > oppScore) {
+          if (ourScore > oppScore && ourScore - 1 <= oppScore) {
             latestWinningGoal = { minute: goal.minute, player: goal.player_name, opponent: opponentName, date: goal.match_date }
           }
 
