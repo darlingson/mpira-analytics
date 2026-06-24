@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       LIMIT 5
     `)
 
-    const [biggestWin] = await db.execute(sql`
+    const biggestWinResult = await db.execute(sql`
       SELECT m.id, m.date,
         CASE WHEN m.home_team_id = ${teamId} THEN m.score_home - m.score_away
              ELSE m.score_away - m.score_home END AS goal_diff,
@@ -81,7 +81,7 @@ export default defineEventHandler(async (event) => {
       goalsAgainst,
       goalsPerMatch,
       topScorers: topScorers.rows ?? [],
-      biggestWin: biggestWin?.rows?.[0] ?? null,
+      biggestWin: biggestWinResult.rows?.[0] ?? null,
       highScoringMatches: highScoringMatches.rows ?? [],
     }
   } catch (error) {
