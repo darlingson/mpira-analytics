@@ -1,30 +1,5 @@
 <script setup lang="ts">
-// Data setup in the Vue 3 Composition API
-const scoreFirstData = [
-    {
-        team: "Nyasa Big Bullets",
-        scored_first: 18,
-        won: 15,
-        win_rate: 83.3,
-    },
-    {
-        team: "Silver Strikers",
-        scored_first: 15,
-        won: 12,
-        win_rate: 80.0,
-    },
-    {
-        team: "Mighty Mukuru Wanderers",
-        scored_first: 14,
-        won: 10,
-        win_rate: 71.4,
-    },
-];
-
-// The Card and Progress components are assumed to be auto-imported
-// as <UCard> and <UProgress> from a UI library like Nuxt UI.
-// If you are using a custom/headless component setup (like Shadcn-vue),
-// you would ensure they are correctly imported or auto-imported.
+const { data: scoreFirstData } = await useFetch("/api/insights/score-first-win")
 </script>
 
 <template>
@@ -77,10 +52,13 @@ const scoreFirstData = [
                                             >{{ team.win_rate }}%</span
                                         >
                                     </div>
-                                    <UProgress
-                                        :value="team.win_rate"
-                                        class="h-2"
-                                    />
+                                    <div class="h-2 w-full rounded-full bg-muted overflow-hidden">
+                                        <div
+                                            class="h-full rounded-full transition-all duration-500"
+                                            :class="team.win_rate >= 75 ? 'bg-green-500' : team.win_rate >= 50 ? 'bg-yellow-500' : 'bg-red-500'"
+                                            :style="{ width: team.win_rate + '%' }"
+                                        />
+                                    </div>
                                 </div>
                                 <div class="text-center px-6">
                                     <p

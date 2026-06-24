@@ -1,40 +1,5 @@
 <script setup lang="ts">
-// Data setup in the Vue 3 Composition API
-const equalizerData = [
-    {
-        player: "Hassan Kajoke",
-        team: "Nyasa Big Bullets",
-        equalizers: 4,
-        matches: [
-            {
-                match: "vs Silver Strikers",
-                minute: "78'",
-                score: "2 - 2",
-                date: "15/03/2025",
-            },
-            {
-                match: "vs MAFCO",
-                minute: "65'",
-                score: "1 - 1",
-                date: "22/02/2025",
-            },
-        ],
-    },
-    {
-        player: "Patrick Mwaungulu",
-        team: "Silver Strikers",
-        equalizers: 3,
-        matches: [],
-    },
-    {
-        player: "Chimwemwe Idana",
-        team: "Blue Eagles",
-        equalizers: 3,
-        matches: [],
-    },
-];
-
-// Components Card and Badge are assumed to be auto-imported.
+const { data: equalizerData } = await useFetch("/api/insights/the-equalizers")
 </script>
 
 <template>

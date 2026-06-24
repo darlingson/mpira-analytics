@@ -9,14 +9,23 @@
             </span>
           </NuxtLink>
           <div class="flex items-center gap-4">
-            <NuxtLink to="/dashboard" class="text-sm font-medium text-muted hover:text-default transition-colors">
+            <NuxtLink to="/matches" class="text-sm font-medium text-muted hover:text-default transition-colors">
               Matches
             </NuxtLink>
             <NuxtLink to="/teams" class="text-sm font-medium text-muted hover:text-default transition-colors">
               Teams
             </NuxtLink>
+            <NuxtLink to="/seasons" class="text-sm font-medium text-muted hover:text-default transition-colors">
+              Seasons
+            </NuxtLink>
+            <NuxtLink to="/insights" class="text-sm font-medium text-muted hover:text-default transition-colors">
+              Insights
+            </NuxtLink>
             <NuxtLink to="/players" class="text-sm font-medium text-muted hover:text-default transition-colors">
               Players
+            </NuxtLink>
+            <NuxtLink to="/top-scorers" class="text-sm font-medium text-muted hover:text-default transition-colors">
+              Top Scorers
             </NuxtLink>
             <SignOutButton redirectUrl="/auth">
               <UButton color="neutral" variant="ghost" size="sm">
