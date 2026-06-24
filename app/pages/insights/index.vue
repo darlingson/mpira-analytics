@@ -8,6 +8,7 @@ const tabs = [
   { label: 'Goals & Timing', value: 'goals' },
   { label: 'Winning Habits', value: 'winning' },
   { label: 'Defense & Equalizers', value: 'defense' },
+  { label: 'Drama & Discipline', value: 'drama' },
 ] satisfies TabsItem[]
 
 const activeTab = ref('comebacks')
@@ -31,14 +32,20 @@ const activeTab = ref('comebacks')
         <div v-else-if="item.value === 'goals'" class="space-y-8 mt-6">
           <LatestWinners />
           <EarlyGoalWinRate />
+          <FastestGoalAndResult />
         </div>
         <div v-else-if="item.value === 'winning'" class="space-y-8 mt-6">
           <ScoreFirstWin />
           <RedCardSurvival />
+          <PenaltyDependency />
         </div>
         <div v-else-if="item.value === 'defense'" class="space-y-8 mt-6">
           <CleanSheets />
           <TheEqualizers />
+        </div>
+        <div v-else-if="item.value === 'drama'" class="space-y-8 mt-6">
+          <DisciplinedThenDeadly />
+          <LateDrama />
         </div>
       </template>
     </UTabs>
