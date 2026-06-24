@@ -1,46 +1,5 @@
 <script setup lang="ts">
-// Data setup in the Vue 3 Composition API
-const heartbreakerData = [
-    {
-        team: "MAFCO FC",
-        heartbreaks: 4,
-        matches: [
-            {
-                match: {
-                    home_team: "MAFCO FC",
-                    away_team: "Blue Eagles",
-                    final_score: "1 - 2",
-                    match_date: "22/03/2025",
-                },
-                events: [
-                    {
-                        minute: "12'",
-                        team: "MAFCO FC",
-                        player: "Chikumbutso Salima",
-                        score_at_event: "1 - 0",
-                    },
-                    {
-                        minute: "56'",
-                        team: "Blue Eagles",
-                        player: "Chimwemwe Idana",
-                        score_at_event: "1 - 1",
-                    },
-                    {
-                        minute: "83'",
-                        team: "Blue Eagles",
-                        player: "Chimwemwe Idana",
-                        score_at_event: "1 - 2",
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        team: "Karonga United",
-        heartbreaks: 3,
-        matches: [],
-    },
-];
+const { data: heartbreakerData } = await useFetch("/api/insights/heart-breakers")
 </script>
 
 <template>

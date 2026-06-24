@@ -1,27 +1,5 @@
 <script setup lang="ts">
-// Data setup in the Vue 3 Composition API
-const earlyGoalData = [
-    {
-        team: "Nyasa Big Bullets",
-        early_goals: 6,
-        wins: 5,
-        win_rate: 83.3,
-    },
-    {
-        team: "Silver Strikers",
-        early_goals: 5,
-        wins: 4,
-        win_rate: 80.0,
-    },
-    {
-        team: "Mighty Mukuru Wanderers",
-        early_goals: 4,
-        wins: 2,
-        win_rate: 50.0,
-    },
-];
-
-// Components Card and Progress are assumed to be auto-imported.
+const { data: earlyGoalData } = await useFetch("/api/insights/win-rate-when-scoring-inside-five")
 </script>
 
 <template>

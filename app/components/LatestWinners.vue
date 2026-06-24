@@ -1,40 +1,5 @@
 <script setup lang="ts">
-// Data setup in the Vue 3 Composition API
-const latestWinnerData = [
-    {
-        team: "Ekhaya",
-        latest_winner: 69,
-        matches: [
-            {
-                match: {
-                    home_team: "Ekhaya",
-                    away_team: "MAFCO",
-                    final_score: "1 - 0",
-                    match_date: "09/08/2025",
-                    half_time: "0-0",
-                },
-                winning_goal: {
-                    minute: "69'",
-                    player: "Yamikani Chester",
-                    team: "Ekhaya",
-                    score_at_event: "1 - 0",
-                },
-            },
-        ],
-    },
-    {
-        team: "Silver Strikers",
-        latest_winner: 88,
-        matches: [],
-    },
-    {
-        team: "Nyasa Big Bullets",
-        latest_winner: 92,
-        matches: [],
-    },
-];
-
-// Components Card and Badge are assumed to be auto-imported.
+const { data: latestWinnerData } = await useFetch("/api/insights/latest-winning-goal-minute")
 </script>
 
 <template>

@@ -15,6 +15,9 @@
             <NuxtLink to="/teams" class="text-sm font-medium text-muted hover:text-default transition-colors">
               Teams
             </NuxtLink>
+            <NuxtLink to="/insights" class="text-sm font-medium text-muted hover:text-default transition-colors">
+              Insights
+            </NuxtLink>
             <NuxtLink to="/players" class="text-sm font-medium text-muted hover:text-default transition-colors">
               Players
             </NuxtLink>

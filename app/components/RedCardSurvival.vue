@@ -1,25 +1,5 @@
 <script setup lang="ts">
-// Data setup in the Vue 3 Composition API
-const redCardData = [
-    {
-        team: "Silver Strikers",
-        red_cards: 3,
-        wins: 2,
-        draws: 1,
-        losses: 0,
-        survival_rate: 100,
-    },
-    {
-        team: "Nyasa Big Bullets",
-        red_cards: 2,
-        wins: 1,
-        draws: 0,
-        losses: 1,
-        survival_rate: 50,
-    },
-];
-
-// Assuming Card and Badge are auto-imported, possibly as UCard and UBadge if using Nuxt UI.
+const { data: redCardData } = await useFetch("/api/insights/red-card-survival")
 </script>
 
 <template>
