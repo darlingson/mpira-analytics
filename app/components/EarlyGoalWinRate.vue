@@ -41,7 +41,13 @@ const { data: earlyGoalData } = await useFetch("/api/insights/win-rate-when-scor
                         }}</span>
                         <span class="text-2xl text-muted-foreground">%</span>
                     </div>
-                    <Progress :value="team.win_rate" class="h-3" />
+                    <div class="h-3 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                            class="h-full rounded-full transition-all duration-500"
+                            :class="team.win_rate >= 75 ? 'bg-green-500' : team.win_rate >= 50 ? 'bg-yellow-500' : 'bg-red-500'"
+                            :style="{ width: team.win_rate + '%' }"
+                        />
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">

@@ -52,10 +52,13 @@ const { data: scoreFirstData } = await useFetch("/api/insights/score-first-win")
                                             >{{ team.win_rate }}%</span
                                         >
                                     </div>
-                                    <UProgress
-                                        :value="team.win_rate"
-                                        class="h-2"
-                                    />
+                                    <div class="h-2 w-full rounded-full bg-muted overflow-hidden">
+                                        <div
+                                            class="h-full rounded-full transition-all duration-500"
+                                            :class="team.win_rate >= 75 ? 'bg-green-500' : team.win_rate >= 50 ? 'bg-yellow-500' : 'bg-red-500'"
+                                            :style="{ width: team.win_rate + '%' }"
+                                        />
+                                    </div>
                                 </div>
                                 <div class="text-center px-6">
                                     <p
